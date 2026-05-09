@@ -66,22 +66,39 @@ Note: MAPE is less reliable due to near-zero log-return values.
 
 ## Project Structure
 ├─ src/
+
 │ ├─ data_loader.py
+
 │ ├─ preprocessing.py
+
 │ ├─ sequence_builder.py
+
 │ ├─ models.py
+
 │ ├─ attention_model.py
+
 │ ├─ rolling_window.py
+
 │ └─ evaluation.py
+
 │
+
 ├─ main_data_prep.py
+
 ├─ main_baseline_lstm.py
+
 ├─ main_attention_lstm.py
+
 ├─ main_rolling_baseline.py
+
 ├─ main_rolling_attention.py
+
 │
+
 ├─ requirements.txt
+
 └─ README.md
+
 
 ## How to Run
 
