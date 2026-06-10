@@ -32,7 +32,7 @@ The framework evaluates multiple models and compares their performance under non
 - Retrains the model sequentially on sliding windows  
 - Improves adaptability to changing market conditions  
 
-### 4. Adaptive Attention-LSTM (Final Model)
+### 4. Adaptive Attention-LSTM (Proposed Model)
 - Combines attention and rolling-window retraining  
 - Showed modest numerical improvements in forecasting performance
   
@@ -100,7 +100,7 @@ The repository also contains additional forecasting experiments and robustness c
 
 ## Preliminary Findings
 
-Preliminary findings indicate modest numerical improvements for the Adaptive Attention-LSTM and OHLC-based models compared to simpler benchmarks. However, statistical tests did not indicate statistically significant forecasting superiority.
+Preliminary findings indicate modest numerical improvements for the Adaptive Attention-LSTM and OHLC-based models compared to simpler benchmarks. However, statistical tests did not indicate statistically significant forecasting superiority over benchmark models.
 
 ## Project Structure
 
@@ -145,16 +145,78 @@ Preliminary findings indicate modest numerical improvements for the Adaptive Att
 ## How to Run
 
 ```bash
+# install dependencies
 pip install -r requirements.txt
 
-# run baseline model
+# -----------------------------
+# Main Forecasting Models
+# -----------------------------
+
+# baseline LSTM
 python main_baseline_lstm.py
 
-# run attention model
+# attention-LSTM
 python main_attention_lstm.py
 
-# run rolling baseline
+# rolling-window LSTM
 python main_rolling_baseline.py
 
-# run adaptive attention model (final)
+# adaptive Attention-LSTM (proposed model)
 python main_rolling_attention.py
+
+
+# -----------------------------
+# Feature Engineering Experiments
+# -----------------------------
+
+# rolling volatility experiment
+python main_rolling_attention_volatility.py
+
+# RSI + moving average indicators
+python main_rolling_attention_indicators.py
+
+# OHLC + return forecasting
+python main_rolling_attention_ohlc.py
+
+
+# -----------------------------
+# Baseline Comparisons
+# -----------------------------
+
+# naive persistence + mean-return baselines
+python main_naive_baseline.py
+
+
+# -----------------------------
+# Statistical Testing
+# -----------------------------
+
+# DM test: baseline LSTM vs adaptive attention-LSTM
+python main_dm_test.py
+
+# DM test: mean-return baseline vs adaptive attention-LSTM
+python main_dm_test_mean_baseline.py
+
+# DM test: OHLC model vs baseline
+python main_dm_test_ohlc.py
+
+
+# -----------------------------
+# Additional Analysis
+# -----------------------------
+
+# hyperparameter tuning
+python main_hyperparameter_tuning.py
+
+# model comparison table
+python main_model_comparison.py
+
+# residual analysis plot
+python main_residual_plot.py
+
+# final results table
+python main_results_table.py
+
+# train-test split visualization
+python main_train_test_plot.py
+
