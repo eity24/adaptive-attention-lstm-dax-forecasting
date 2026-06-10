@@ -1,0 +1,5 @@
+model,rmse,mae,mape
+Baseline LSTM,0.7275,0.5346,111.58
+Attention-LSTM,0.7269,0.5342,103.14
+Rolling LSTM (200),0.7082,0.5349,127.2
+Adaptive Attention-LSTM,0.7069,0.5346,103.87

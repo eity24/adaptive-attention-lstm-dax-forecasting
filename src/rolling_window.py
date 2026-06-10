@@ -1,5 +1,14 @@
 import numpy as np
-from src.sequence_builder import create_sequences
+
+
+def create_sequences_multifeature(data, target, window_size=20):
+    X, y = [], []
+
+    for i in range(window_size, len(data)):
+        X.append(data[i - window_size:i])
+        y.append(target[i])
+
+    return np.array(X), np.array(y)
 
 
 def rolling_window_forecast(
@@ -9,7 +18,9 @@ def rolling_window_forecast(
     sequence_length=20,
     epochs=5,
     batch_size=32,
-    max_steps=50
+    max_steps=50,
+    n_features=1,
+    target_column=0
 ):
     predictions = []
     actuals = []
@@ -24,13 +35,28 @@ def rolling_window_forecast(
         end_idx = start_idx + train_window
 
         train_data = series[start_idx:end_idx]
-        actual_value = series[end_idx]
 
-        X_train, y_train = create_sequences(train_data, window_size=sequence_length)
+        actual_value = series[end_idx, target_column] if n_features > 1 else series[end_idx]
 
-        X_train = X_train.reshape((X_train.shape[0], X_train.shape[1], 1))
+        if n_features > 1:
+            target_data = train_data[:, target_column]
+            X_train, y_train = create_sequences_multifeature(
+                train_data,
+                target_data,
+                window_size=sequence_length
+            )
+        else:
+            target_data = train_data
+            X_train, y_train = create_sequences_multifeature(
+                train_data.reshape(-1, 1),
+                target_data,
+                window_size=sequence_length
+            )
 
-        model = model_builder(window_size=sequence_length)
+        model = model_builder(
+            window_size=sequence_length,
+            n_features=n_features
+        )
 
         model.fit(
             X_train,
@@ -41,7 +67,11 @@ def rolling_window_forecast(
         )
 
         last_sequence = train_data[-sequence_length:]
-        X_test = last_sequence.reshape((1, sequence_length, 1))
+
+        if n_features == 1:
+            X_test = last_sequence.reshape((1, sequence_length, 1))
+        else:
+            X_test = last_sequence.reshape((1, sequence_length, n_features))
 
         predicted_value = model.predict(X_test, verbose=0)[0][0]
 

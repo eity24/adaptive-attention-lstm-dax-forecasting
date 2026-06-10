@@ -16,3 +16,10 @@ def calculate_mape(y_true, y_pred):
 
     epsilon = 1e-8
     return np.mean(np.abs((y_true - y_pred) / (y_true + epsilon))) * 100
+
+
+def calculate_directional_accuracy(y_true, y_pred):
+    y_true_direction = y_true > 0
+    y_pred_direction = y_pred > 0
+
+    return (y_true_direction == y_pred_direction).mean() * 100

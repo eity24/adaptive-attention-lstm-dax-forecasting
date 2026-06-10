@@ -13,7 +13,6 @@ class SimpleAttention(tf.keras.layers.Layer):
             initializer="random_normal",
             trainable=True
         )
-
         self.b = self.add_weight(
             shape=(input_shape[1], 1),
             initializer="zeros",
@@ -27,8 +26,8 @@ class SimpleAttention(tf.keras.layers.Layer):
         return context_vector
 
 
-def build_attention_lstm(window_size=20):
-    inputs = Input(shape=(window_size, 1))
+def build_attention_lstm(window_size=20, n_features=1):
+    inputs = Input(shape=(window_size, n_features))
 
     lstm_out = LSTM(50, return_sequences=True)(inputs)
 

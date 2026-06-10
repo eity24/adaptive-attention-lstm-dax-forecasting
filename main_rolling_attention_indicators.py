@@ -2,7 +2,7 @@ from src.data_loader import download_dax_data, load_dax_data
 from src.preprocessing import (
     keep_required_columns,
     compute_log_returns,
-    scale_train_test
+    compute_technical_indicators
 )
 from src.attention_model import build_attention_lstm
 from src.rolling_window import rolling_window_forecast
@@ -13,6 +13,8 @@ from src.evaluation import (
     calculate_directional_accuracy
 )
 from src.plotting import plot_predictions, plot_predictions_zoom
+
+from sklearn.preprocessing import StandardScaler
 import numpy as np
 
 
@@ -24,36 +26,52 @@ def main():
     print("Step 2: Preprocessing data...")
     df = keep_required_columns(df)
     df = compute_log_returns(df)
+    df = compute_technical_indicators(df)
 
-    series = df["log_return"].values
+    print("Step 3: Creating feature matrix...")
 
-    print("Step 3: Creating initial scaling...")
-    train_part = series[:1000]
-    test_part = series[1000:]
+    features = df[
+        [
+            "log_return",
+            "rolling_mean_20",
+            "rsi_14"
+        ]
+    ].values
 
-    train_scaled, test_scaled, scaler = scale_train_test(
-        train_part,
-        test_part
-    )
+    print("Feature shape before scaling:", features.shape)
 
-    scaled_series = list(train_scaled) + list(test_scaled)
-    scaled_series = np.array(scaled_series)
+    print("Step 4: Scaling features...")
 
-    print("Step 4: Running rolling-window Attention-LSTM...")
+    train_part = features[:1000]
+    test_part = features[1000:]
+
+    scaler = StandardScaler()
+
+    train_scaled = scaler.fit_transform(train_part)
+    test_scaled = scaler.transform(test_part)
+
+    scaled_features = np.vstack([
+        train_scaled,
+        test_scaled
+    ])
+
+    print("Feature shape after scaling:", scaled_features.shape)
+
+    print("Step 5: Running Attention-LSTM with technical indicators...")
 
     actuals, predictions = rolling_window_forecast(
-        series=scaled_series,
+        series=scaled_features,
         model_builder=build_attention_lstm,
         train_window=1000,
         sequence_length=20,
         epochs=10,
         batch_size=32,
-        max_steps=200,
-        n_features=1,
+        max_steps=50,
+        n_features=3,
         target_column=0
     )
 
-    print("Step 5: Evaluating Adaptive Attention-LSTM...")
+    print("Step 6: Evaluating Attention-LSTM with technical indicators...")
 
     rmse = calculate_rmse(actuals, predictions)
     mae = calculate_mae(actuals, predictions)
@@ -64,33 +82,40 @@ def main():
     )
 
     print("\n====================================")
-    print("Adaptive Attention-LSTM Results")
+    print("Attention-LSTM + Technical Indicators Results")
     print("====================================")
     print("RMSE:", rmse)
     print("MAE:", mae)
     print("MAPE:", mape)
     print("Directional Accuracy:", directional_accuracy)
 
-    np.save("results/adaptive_actuals.npy", actuals)
-    np.save("results/adaptive_predictions.npy", predictions)
+    np.save(
+        "results/indicators_actuals.npy",
+        actuals
+    )
 
-    print("Adaptive predictions saved!")
+    np.save(
+        "results/indicators_predictions.npy",
+        predictions
+    )
 
-    print("Step 6: Plotting results...")
+    print("Indicator model predictions saved!")
+
+    print("Step 7: Plotting results...")
 
     plot_predictions(
         actuals,
         predictions,
-        title="Adaptive Attention-LSTM: Actual vs Predicted",
-        save_path="results/adaptive_attention_plot.png"
+        title="Attention-LSTM with Technical Indicators: Actual vs Predicted",
+        save_path="results/indicators_plot.png"
     )
 
     plot_predictions_zoom(
         actuals,
         predictions,
-        title="Adaptive Attention-LSTM: Actual vs Predicted (First 50 Steps)",
+        title="Attention-LSTM with Technical Indicators (First 50 Steps)",
         n_points=50,
-        save_path="results/adaptive_attention_zoom_plot.png"
+        save_path="results/indicators_zoom_plot.png"
     )
 
 

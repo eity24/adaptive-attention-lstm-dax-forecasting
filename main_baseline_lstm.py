@@ -1,3 +1,4 @@
+import numpy as np
 from src.evaluation import calculate_rmse, calculate_mae, calculate_mape
 from src.data_loader import download_dax_data, load_dax_data
 from src.preprocessing import (
@@ -67,6 +68,11 @@ def main():
     print("RMSE:", rmse)
     print("MAE:", mae)
     print("MAPE:", mape)
+
+    np.save("results/baseline_actuals.npy", y_test)
+    np.save("results/baseline_predictions.npy", y_pred)
+
+    print("Baseline predictions saved!")
 
 
 if __name__ == "__main__":
