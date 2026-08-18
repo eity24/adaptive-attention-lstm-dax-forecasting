@@ -85,7 +85,7 @@ def main():
         sequence_length=20,
         epochs=10,
         batch_size=32,
-        max_steps=50,   # first test run
+        max_steps=200,   # first test run
         n_features=2,
         target_column=0
     )

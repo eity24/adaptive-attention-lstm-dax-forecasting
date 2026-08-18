@@ -74,6 +74,18 @@ def main():
 
     print("Baseline predictions saved!")
 
+    print("\nBaseline LSTM Evaluation Results (First 200 Test Predictions):")
+
+    y_test_200 = y_test[:200]
+    y_pred_200 = y_pred[:200]
+
+    rmse_200 = calculate_rmse(y_test_200, y_pred_200)
+    mae_200 = calculate_mae(y_test_200, y_pred_200)
+    mape_200 = calculate_mape(y_test_200, y_pred_200)
+
+    print("RMSE:", rmse_200)
+    print("MAE:", mae_200)
+    print("MAPE:", mape_200)
 
 if __name__ == "__main__":
     main()

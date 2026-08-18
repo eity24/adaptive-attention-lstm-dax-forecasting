@@ -131,7 +131,7 @@ def main():
         sequence_length=20,
         epochs=10,
         batch_size=32,
-        max_steps=50,
+        max_steps=200,
         n_features=5,
         target_column=4
     )
